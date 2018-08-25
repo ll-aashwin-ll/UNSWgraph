@@ -38,16 +38,35 @@ public class Point2D {
      * @param frame
      */
     public void draw(GL3 gl, CoordFrame2D frame) {
+        /* quite literally a list of Point2D */
         Point2DBuffer buffer = new Point2DBuffer(1);
+        /* 'this' is a Point2D */
         buffer.put(0, this);
+        /* 'names' for buffer objects */
         int[] names = new int[1];
+        /* generate '1' name(s) for buffer objects
+            store the names in 'names' array
+            with and offset of '0'
+         */
         gl.glGenBuffers(1, names, 0);
 
+        /* GL_ARRAY_BUFFER is a special global var
+            names[0] is now that special GL_ARRAY_BUFFER
+            opengl will perform operations on
+         */
         gl.glBindBuffer(GL.GL_ARRAY_BUFFER, names[0]);
-
+        /* transfer data from main memory into GPU memory
+            GL.GL_ARRAY_BUFFER is the buffer in GPU memory
+            transfer '2*float.bytes'
+            buffer.getBuffer is the data in main memory
+            GL_STATIC_DRAW - will this data change often (no in this case)
+         */
         gl.glBufferData(GL.GL_ARRAY_BUFFER, 2 * Float.BYTES, buffer.getBuffer(),
                 GL.GL_STATIC_DRAW);
 
+        /* attach data to the vertecies in the buffer
+            in this case the data is the position of the verticies
+         */
         gl.glVertexAttribPointer(Shader.POSITION, 2, GL.GL_FLOAT, false, 0, 0);
         Shader.setModelMatrix(gl, frame.getMatrix());
         gl.glDrawArrays(GL.GL_POINTS, 0, 1);
