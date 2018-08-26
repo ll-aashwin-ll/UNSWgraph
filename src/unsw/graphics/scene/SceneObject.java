@@ -8,6 +8,7 @@ import com.jogamp.opengl.GL3;
 
 import unsw.graphics.CoordFrame2D;
 import unsw.graphics.Matrix3;
+import unsw.graphics.Vector3;
 import unsw.graphics.geometry.Point2D;
 
 import static com.jogamp.opengl.math.FloatUtil.atan2;
@@ -323,6 +324,53 @@ public class SceneObject {
 
     /* TODO Orgainise */
 
+    /**
+     *
+     * @param mat
+     * @return
+     */
+    public Point2D getTranslationFromMatrix(Matrix3 mat) {
+        float matVals[] = mat.getValues();
+
+        float x = matVals[6];
+        float y = matVals[7];
+
+        Point2D translation = new Point2D(x, y);
+
+        return translation;
+    }
+
+
+    /**
+     *
+     * @param mat
+     * @return
+     */
+    public float getRotationFromMatrix(Matrix3 mat) {
+
+        float matVals[] = mat.getValues();
+
+        float i1 = matVals[0];
+        float i2 = matVals[1];
+
+        float rot = (float) Math.toDegrees(atan2(i2, i1));
+
+        return rot;
+    }
+
+    /**
+     *
+     * @param mat
+     * @return
+     */
+    public float getScaleFromMatrix(Matrix3 mat) {
+        float matVals[] = mat.getValues();
+
+        float scale = (float) Math.sqrt(Math.pow(matVals[0],2) + Math.pow(matVals[1],2));
+
+        return scale;
+    }
+
 
     /**
      * Compute the object's position in world coordinates
@@ -333,30 +381,11 @@ public class SceneObject {
 
         Matrix3 globalTransform = getLocalToGlobalTransform();
 
-        System.out.println(globalTransform.toString());
-
-        float mat[] = globalTransform.getValues();
-
-        float x = mat[6];
-        float y = mat[7];
-
-        Point2D globalPos = new Point2D(x, y);
+        Point2D globalPos = getTranslationFromMatrix(globalTransform);
 
         return globalPos;
     }
 
-    /**
-     * Round to certain number of decimals
-     *
-     * @param d
-     * @param decimalPlace
-     * @return
-     */
-    private static float round(float d, int decimalPlace) {
-        BigDecimal bd = new BigDecimal(Float.toString(d));
-        bd = bd.setScale(decimalPlace, BigDecimal.ROUND_HALF_UP);
-        return bd.floatValue();
-    }
 
     /**
      * Compute the object's rotation in the global coordinate frame
@@ -368,13 +397,7 @@ public class SceneObject {
 
         Matrix3 globalTransform = getLocalToGlobalTransform();
 
-        System.out.println(globalTransform.toString());
-
-        float mat[] = globalTransform.getValues();
-
-
-        float rot = (float) Math.toDegrees(atan2(mat[1], mat[0]));
-
+        float rot = getRotationFromMatrix(globalTransform);
 
         return rot;
     }
@@ -387,15 +410,11 @@ public class SceneObject {
     public float getGlobalScale() {
         Matrix3 globalTransform = getLocalToGlobalTransform();
 
-        System.out.println(globalTransform.toString());
-
-        float mat[] = globalTransform.getValues();
-
-        float scale = (float) Math.sqrt(Math.pow(mat[0],2) + Math.pow(mat[1],2));
+        float scale = getScaleFromMatrix(globalTransform);
 
         return scale;
-
     }
+
 
     /**
      * Change the parent of a scene object.
@@ -406,7 +425,45 @@ public class SceneObject {
         // TODO: add code so that the object does not change its global position, rotation or scale
         // when it is reparented. You may need to add code before and/or after 
         // the fragment of code that has been provided - depending on your approach
-        
+
+        /* get parent global transform */
+        Matrix3 parentTransform = parent.getLocalToGlobalTransform();
+
+        // TODO: consider making this an inverse
+        /* get inverse of parent global transform */
+        Point2D parentTranslation = getTranslationFromMatrix(parentTransform);
+        float parentRoation = getRotationFromMatrix(parentTransform);
+        float parentScale = getScaleFromMatrix(parentTransform);
+
+        Point2D parentInverseTranslation = new Point2D(-parentTranslation.getX(), -parentTranslation.getY());
+        float parentInverseRotation = -parentRoation;
+        float parentInverseScale = 1/parentScale;
+
+        Matrix3 inverseScaleMat = Matrix3.identity().scale(parentInverseScale, parentInverseScale);
+        Matrix3 inverseRotMat = Matrix3.identity().rotation(parentInverseRotation);
+        Matrix3 inverseTranslationMat = Matrix3.identity().translation(parentInverseTranslation);
+
+        Matrix3 parentInverseTransform = inverseScaleMat.multiply(inverseRotMat);
+        parentInverseTransform = parentInverseTransform.multiply(inverseTranslationMat);
+
+
+
+        /* get object's global transform */
+        Matrix3 objTransform =  getLocalToGlobalTransform();
+
+        /* get the new global transform for this object
+        *  this is done by multiplying the parent's global
+        *  inverse transform with this object's global transform
+        */
+        Matrix3 newObjTransform = parentInverseTransform.multiply(objTransform);
+
+
+        /* set new new position, scale, rotation */
+        this.setPosition(getTranslationFromMatrix(newObjTransform));
+        this.setRotation(getRotationFromMatrix(newObjTransform));
+        this.setScale(getScaleFromMatrix(newObjTransform));
+
+
         myParent.myChildren.remove(this);
         myParent = parent;
         myParent.myChildren.add(this);
