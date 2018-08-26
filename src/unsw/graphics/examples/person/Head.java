@@ -17,6 +17,10 @@ import unsw.graphics.geometry.Polygon2D;
  */
 public class Head {
 
+    /* number of vertices in circle
+        more would mean rounder
+        less would make circle more blockly
+     */
     private static final int VERTICES = 32;
     private static final float RADIUS = 3;
     

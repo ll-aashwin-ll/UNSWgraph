@@ -60,7 +60,7 @@ public class PersonDemo extends Application2D implements KeyListener {
             frame = CoordFrame2D.identity();
         }
         
-        person.draw(gl,frame);
+        person.draw(gl,frame.rotate(30));
         
         //Draw the camera so we can see it if we're not using a camera view
         //camera.draw(gl, frame);
