@@ -113,7 +113,7 @@ public class Pirate extends PolygonalSceneObject {
     /**
      * COMMENT: fromJSON
      * 
-     * @param jsonPlayer
+     * @param json
      * @return
      */
     public static Pirate fromJSON(SceneObject parent, JSONObject json) {

@@ -31,7 +31,6 @@ public class PolygonalSceneObject extends SceneObject {
      * should not be drawn.
      *
      * @param parent The parent in the scene tree
-     * @param points A list of points defining the polygon
      * @param fillColor The fill color
      * @param lineColor The outline color
     */

@@ -52,7 +52,6 @@ public class Mouse extends MouseAdapter {
     /**
      * When the window is reshaped, store the new projection matrix and viewport
      * 
-     * @param gl
      */
     public void reshape(int width, int height) {
         
@@ -64,7 +63,6 @@ public class Mouse extends MouseAdapter {
      *
      * Update any mouse presses or releases that have happened.
      * 
-     * @param gl
      */
     public void update(Camera camera, Window window) {
         if (lastEvent != null) {

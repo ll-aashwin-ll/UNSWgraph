@@ -56,12 +56,6 @@ public class Matrix3 {
         return new Matrix3(values);
     }
     
-    /**
-     * Create a translation matrix to the given point.
-     * @param x The x coordinate of the new origin
-     * @param y The y coordinate of the new origin
-     * @return
-     */
     public static Matrix3 translation(Point2D point) {
         return translation(point.getX(), point.getY());
     }
@@ -110,11 +104,6 @@ public class Matrix3 {
         return new Matrix3(values);
     }
     
-    /**
-     * Create a vertical sheer matrix.
-     * @param h
-     * @return
-     */
     public static Matrix3 verticalShear(float v) {
         float[] values = new float[] {
             1, v, 0, // i
@@ -153,8 +142,6 @@ public class Matrix3 {
     
     /**
      * Multiply this matrix by the given (column) vector.
-     * @param mat
-     * @return
      */
     public Vector3 multiply(Vector3 v) {
         float[] r = new float[3];

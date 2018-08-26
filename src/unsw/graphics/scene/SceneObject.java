@@ -1,12 +1,16 @@
 package unsw.graphics.scene;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
 import com.jogamp.opengl.GL3;
 
 import unsw.graphics.CoordFrame2D;
+import unsw.graphics.Matrix3;
 import unsw.graphics.geometry.Point2D;
+
+import static com.jogamp.opengl.math.FloatUtil.atan2;
 
 /**
  * A SceneObject is an object that can move around in the world.
@@ -176,8 +180,6 @@ public class SceneObject {
     /**
      * Set the local position of the object
      * 
-     * @param x
-     * @param y
      */
     public void setPosition(Point2D p) {
         myTranslation = p;
@@ -268,12 +270,59 @@ public class SceneObject {
             return;
         }
 
-        // TODO: Compute the coordinate frame for this object
-        // draw the object (Call drawSelf() to draw the object itself) 
-        // and all its children recursively
-       
+
+        // compute coord frame for this obj
+        CoordFrame2D objFrame = frame
+                .translate(myTranslation)
+                .rotate(myRotation)
+                .scale(myScale, myScale);
+
+        // draw self
+        this.drawSelf(gl, objFrame);
+        // draw children
+        for (SceneObject child: myChildren) {
+            child.draw(gl, objFrame);
+        }
+
         
     }
+
+    private CoordFrame2D getLocalCoordFrame() {
+        // compute coord frame for this obj
+        CoordFrame2D objFrame = CoordFrame2D.identity()
+                .translate(myTranslation)
+                .rotate(myRotation)
+                .scale(myScale, myScale);
+
+        return objFrame;
+    }
+
+    private Matrix3 getLocalToGlobalTransform() {
+
+        SceneObject parent = myParent;
+
+        Matrix3 parentTransform;
+        Matrix3 localTransform = getLocalCoordFrame().getMatrix();
+
+        if (parent == null) {
+            /* at root - no parent, set identity */
+            parentTransform = CoordFrame2D.identity().getMatrix();
+        } else {
+            /* not at parent - recurse */
+            /* will return a transform which will transform local frame into global */
+            parentTransform = parent.getLocalToGlobalTransform();
+        }
+
+        /* multiply to get global transform */
+        Matrix3 globalTransform = parentTransform.multiply(localTransform);
+
+
+        return globalTransform;
+
+    }
+
+    /* TODO Orgainise */
+
 
     /**
      * Compute the object's position in world coordinates
@@ -281,8 +330,32 @@ public class SceneObject {
      * @return a point in world coordinats
      */
     public Point2D getGlobalPosition() {
-        // TODO: Complete this
-        return null;
+
+        Matrix3 globalTransform = getLocalToGlobalTransform();
+
+        System.out.println(globalTransform.toString());
+
+        float mat[] = globalTransform.getValues();
+
+        float x = mat[6];
+        float y = mat[7];
+
+        Point2D globalPos = new Point2D(x, y);
+
+        return globalPos;
+    }
+
+    /**
+     * Round to certain number of decimals
+     *
+     * @param d
+     * @param decimalPlace
+     * @return
+     */
+    private static float round(float d, int decimalPlace) {
+        BigDecimal bd = new BigDecimal(Float.toString(d));
+        bd = bd.setScale(decimalPlace, BigDecimal.ROUND_HALF_UP);
+        return bd.floatValue();
     }
 
     /**
@@ -292,8 +365,18 @@ public class SceneObject {
      * normalized to the range (-180, 180) degrees. 
      */
     public float getGlobalRotation() {
-        // TODO: Complete this
-        return 0;
+
+        Matrix3 globalTransform = getLocalToGlobalTransform();
+
+        System.out.println(globalTransform.toString());
+
+        float mat[] = globalTransform.getValues();
+
+
+        float rot = (float) Math.toDegrees(atan2(mat[1], mat[0]));
+
+
+        return rot;
     }
 
     /**
@@ -302,8 +385,16 @@ public class SceneObject {
      * @return the global scale of the object 
      */
     public float getGlobalScale() {
-        // TODO: Complete this
-        return 1;
+        Matrix3 globalTransform = getLocalToGlobalTransform();
+
+        System.out.println(globalTransform.toString());
+
+        float mat[] = globalTransform.getValues();
+
+        float scale = (float) Math.sqrt(Math.pow(mat[0],2) + Math.pow(mat[1],2));
+
+        return scale;
+
     }
 
     /**

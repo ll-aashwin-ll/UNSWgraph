@@ -47,7 +47,7 @@ public class Merchant extends PolygonalSceneObject {
     /**
      * COMMENT: fromJSON
      * 
-     * @param jsonObject
+     * @param json
      * @return
      */
     public static Merchant fromJSON(SceneObject parent, JSONObject json) {
