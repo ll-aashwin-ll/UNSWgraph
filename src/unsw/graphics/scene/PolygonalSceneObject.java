@@ -5,6 +5,7 @@ import java.awt.Color;
 import com.jogamp.opengl.GL3;
 
 import unsw.graphics.CoordFrame2D;
+import unsw.graphics.Shader;
 import unsw.graphics.geometry.Polygon2D;
 
 /**
@@ -43,6 +44,7 @@ public class PolygonalSceneObject extends SceneObject {
         myLineColor = lineColor;
     }
 
+    public void setPolygon(Polygon2D poly) { myPolygon = poly; }
     /**
      * Get the fill color
      * 
@@ -97,9 +99,20 @@ public class PolygonalSceneObject extends SceneObject {
      */
     @Override
     public void drawSelf(GL3 gl, CoordFrame2D frame) {
+        if (myFillColor != null) {
+            Shader.setPenColor(gl, myFillColor);
+        } else {
+            Shader.setPenColor(gl, Color.BLACK);
+        }
+        myPolygon.draw(gl, frame);
 
-        // TODO: Write this method
+        if (myLineColor != null) {
+            Shader.setPenColor(gl, myLineColor);
+        } else {
+            Shader.setPenColor(gl, Color.BLACK);
 
+        }
+        myPolygon.drawOutline(gl, frame);
     }
 
 

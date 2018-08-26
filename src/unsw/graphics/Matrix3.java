@@ -124,7 +124,7 @@ public class Matrix3 {
         }
         return str;
     }
-    
+
     /**
      * Multiply this matrix by the given matrix.
      * @param mat
@@ -150,7 +150,9 @@ public class Matrix3 {
         }
         return new Vector3(r);
     }
-    
+
+
+
     private Vector3 getColumn(int x) {
         float[] vec = new float[3];
         for (int y = 0; y < 3; y++) {
