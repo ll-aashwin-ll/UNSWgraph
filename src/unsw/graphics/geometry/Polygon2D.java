@@ -96,4 +96,7 @@ public class Polygon2D {
         draw(gl, CoordFrame2D.identity());
     }
 
+    public List<Point2D> getPoints() {
+        return points;
+    }
 }

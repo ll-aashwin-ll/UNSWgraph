@@ -3,6 +3,10 @@ package unsw.graphics.scene;
 import com.jogamp.opengl.GL3;
 
 import unsw.graphics.CoordFrame2D;
+import unsw.graphics.geometry.Point2D;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -73,6 +77,25 @@ public class Scene {
     public void setCamera(Camera camera) {
         myCamera.destroy();
         this.myCamera = camera;
+    }
+
+    public List<SceneObject> collision(Point2D p) {
+        List<SceneObject> colObjs = new ArrayList<>();
+
+        SceneObject root = getRoot();
+
+        List<SceneObject> children = root.getChildren();
+
+        while (!children.isEmpty()) {
+            SceneObject child = children.remove(0);
+            children.addAll(child.getChildren());
+
+            if (child.collides(p)) {
+                colObjs.add(child);
+            }
+        }
+
+        return colObjs;
     }
     
 }

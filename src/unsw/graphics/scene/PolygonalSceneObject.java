@@ -1,11 +1,16 @@
 package unsw.graphics.scene;
 
 import java.awt.Color;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.jogamp.opengl.GL3;
 
 import unsw.graphics.CoordFrame2D;
+import unsw.graphics.Matrix3;
 import unsw.graphics.Shader;
+import unsw.graphics.Vector3;
+import unsw.graphics.geometry.Point2D;
 import unsw.graphics.geometry.Polygon2D;
 
 /**
@@ -113,6 +118,39 @@ public class PolygonalSceneObject extends SceneObject {
 
         }
         myPolygon.drawOutline(gl, frame);
+    }
+
+    @Override
+    public Boolean collides(Point2D p) {
+
+        Matrix3 inverseTransform = this.getGlobalToLocalTransform();
+
+        Point2D localPos = inverseTransform.multiply(new Vector3(p.getX(), p.getY(), 1)).asPoint2D();
+
+        List<Point2D> points = myPolygon.getPoints();
+
+        int nvert = points.size();
+
+        double[] vertx = new double[nvert];
+        double[] verty = new double[nvert];
+
+        for (int i = 0; i < nvert; i++) {
+            Point2D temp = points.get(i);
+            vertx[i] = temp.getX();
+            verty[i] = temp.getY();
+        }
+
+
+
+        /* adapated from https://wrf.ecse.rpi.edu//Research/Short_Notes/pnpoly.html */
+        int i, j= 0;
+        Boolean c = false;
+        for (i = 0, j = nvert-1; i < nvert; j = i++) {
+            if ( ((verty[i]>localPos.getY()) != (verty[j]>localPos.getY())) &&
+                    (localPos.getX()< (vertx[j]-vertx[i]) * (localPos.getY()-verty[i]) / (verty[j]-verty[i]) + vertx[i]) )
+                c = !c;
+        }
+        return c;
     }
 
 

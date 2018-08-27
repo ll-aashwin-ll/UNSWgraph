@@ -298,7 +298,7 @@ public class SceneObject {
         return objFrame;
     }
 
-    private Matrix3 getLocalToGlobalTransform() {
+    protected Matrix3 getLocalToGlobalTransform() {
 
         SceneObject parent = myParent;
 
@@ -415,6 +415,30 @@ public class SceneObject {
         return scale;
     }
 
+    protected Matrix3 getGlobalToLocalTransform() {
+        /* get my global transform */
+        Matrix3 myTransform = this.getLocalToGlobalTransform();
+
+        // TODO: consider making this an inverse
+        /* get inverse of my global transform */
+        Point2D myTranslation = getTranslationFromMatrix(myTransform);
+        float myRoation = getRotationFromMatrix(myTransform);
+        float myScale = getScaleFromMatrix(myTransform);
+
+        Point2D myInverseTranslation = new Point2D(-myTranslation.getX(), -myTranslation.getY());
+        float myInverseRotation = -myRoation;
+        float myInverseScale = 1/myScale;
+
+        Matrix3 inverseScaleMat = Matrix3.identity().scale(myInverseScale, myInverseScale);
+        Matrix3 inverseRotMat = Matrix3.identity().rotation(myInverseRotation);
+        Matrix3 inverseTranslationMat = Matrix3.identity().translation(myInverseTranslation);
+
+        Matrix3 myInverseTransform = inverseScaleMat.multiply(inverseRotMat);
+        myInverseTransform = myInverseTransform.multiply(inverseTranslationMat);
+
+        return myInverseTransform;
+
+    }
 
     /**
      * Change the parent of a scene object.
@@ -426,25 +450,8 @@ public class SceneObject {
         // when it is reparented. You may need to add code before and/or after 
         // the fragment of code that has been provided - depending on your approach
 
-        /* get parent global transform */
-        Matrix3 parentTransform = parent.getLocalToGlobalTransform();
 
-        // TODO: consider making this an inverse
-        /* get inverse of parent global transform */
-        Point2D parentTranslation = getTranslationFromMatrix(parentTransform);
-        float parentRoation = getRotationFromMatrix(parentTransform);
-        float parentScale = getScaleFromMatrix(parentTransform);
-
-        Point2D parentInverseTranslation = new Point2D(-parentTranslation.getX(), -parentTranslation.getY());
-        float parentInverseRotation = -parentRoation;
-        float parentInverseScale = 1/parentScale;
-
-        Matrix3 inverseScaleMat = Matrix3.identity().scale(parentInverseScale, parentInverseScale);
-        Matrix3 inverseRotMat = Matrix3.identity().rotation(parentInverseRotation);
-        Matrix3 inverseTranslationMat = Matrix3.identity().translation(parentInverseTranslation);
-
-        Matrix3 parentInverseTransform = inverseScaleMat.multiply(inverseRotMat);
-        parentInverseTransform = parentInverseTransform.multiply(inverseTranslationMat);
+        Matrix3 parentInverseTransform = parent.getGlobalToLocalTransform();
 
 
 
@@ -469,6 +476,11 @@ public class SceneObject {
         myParent.myChildren.add(this);
         
     }
-    
+
+    /* meant to be overidden by subclasses */
+    public Boolean collides(Point2D p) {
+        return null;
+    }
+
 
 }

@@ -13,6 +13,8 @@ import unsw.graphics.scene.Scene;
 /**
  * A simple class to view MyCoolSceneObject
  *
+ * It displays the most amazing object in the world: Newton's Cradle
+ *
  * @author angf
  * @author Robert Clifton-Everest
  */
