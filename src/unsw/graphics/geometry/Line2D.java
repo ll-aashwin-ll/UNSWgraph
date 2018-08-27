@@ -19,6 +19,7 @@ import unsw.graphics.Shader;
  */
 public class Line2D {
     private Point2D start, end;
+    private float lineWidth = 1;
 
     /** 
      * Construct a line from 'start' to 'end'
@@ -48,7 +49,11 @@ public class Line2D {
     public Point2D getEnd() {
         return end;
     }
-    
+
+    public void setLineWidth(float lineWidth) {
+        this.lineWidth = lineWidth;
+    }
+
     /**
      * Draw the line in the given coordinate frame.
      * @param gl
@@ -62,7 +67,9 @@ public class Line2D {
         gl.glGenBuffers(1, names, 0);
         gl.glBindBuffer(GL.GL_ARRAY_BUFFER, names[0]);
         gl.glBufferData(GL.GL_ARRAY_BUFFER, 2*2*Float.BYTES, buffer.getBuffer(), GL.GL_STATIC_DRAW);
-        
+
+        gl.glLineWidth(lineWidth);
+
         gl.glVertexAttribPointer(Shader.POSITION, 2, GL.GL_FLOAT, false, 0, 0);
         Shader.setModelMatrix(gl, frame.getMatrix());
         gl.glDrawArrays(GL.GL_LINES, 0, 2);

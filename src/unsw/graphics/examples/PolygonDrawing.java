@@ -12,6 +12,7 @@ import com.jogamp.newt.event.MouseEvent;
 import com.jogamp.opengl.GL3;
 
 import unsw.graphics.Application2D;
+import unsw.graphics.CoordFrame2D;
 import unsw.graphics.geometry.Line2D;
 import unsw.graphics.geometry.LineStrip2D;
 import unsw.graphics.geometry.Point2D;
@@ -75,8 +76,10 @@ public class PolygonDrawing extends Application2D {
         currentStrip.draw(gl);
         currentPoint.draw(gl);
         
-        for (Polygon2D poly : finishedPolygons) 
+        for (Polygon2D poly : finishedPolygons) {
             poly.draw(gl);
+            poly.drawOutline(gl, CoordFrame2D.identity());
+        }
         
         if (!currentStrip.getPoints().isEmpty()) {
             Line2D incomplete = new Line2D(currentPoint, currentStrip.getLast());

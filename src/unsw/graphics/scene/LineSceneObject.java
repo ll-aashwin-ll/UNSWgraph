@@ -28,6 +28,10 @@ public class LineSceneObject extends SceneObject{
         this.lineColor = lineColor;
     }
 
+    public void setLineWidth(float width) {
+        line.setLineWidth(width);
+    }
+
     public void setLineColor(Color c) {
         this.lineColor = c;
     }
