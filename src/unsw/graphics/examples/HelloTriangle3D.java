@@ -35,7 +35,7 @@ public class HelloTriangle3D extends Application3D {
     public void display(GL3 gl) {
         super.display(gl);
         
-        Triangle3D tri1 = new Triangle3D(0,0,-1, 0.5f,0,-1, 0,1,-1);
+        Triangle3D tri1 = new Triangle3D(0,0,-1, 0.5f,0,-1, 0,1,-10f);
         Triangle3D tri2 = new Triangle3D(-1,0,-2, 1,0,-2, 0,0.5f,-2);
         Shader.setPenColor(gl, Color.BLUE);
         tri1.draw(gl);

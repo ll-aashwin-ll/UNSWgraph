@@ -4,6 +4,7 @@ import java.awt.Color;
 
 import com.jogamp.newt.event.MouseEvent;
 import com.jogamp.newt.event.MouseListener;
+import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL3;
 
 import unsw.graphics.Application3D;
@@ -59,10 +60,21 @@ public class ZFightingExample extends Application3D implements MouseListener {
                 .rotateY(rotateY);
         TriangleFan3D tri1 = new TriangleFan3D(-1.5f,-2,-2, 0.5f,-2,-2, 0.5f,2,-2, -1.5f,2,-2);
         TriangleFan3D tri2 = new TriangleFan3D(-0.5f,-2,-2, 1.5f,-2,-2, 1.5f,2,-2, -0.5f,2,-2);
-       
+
+        gl.glEnable(GL.GL_POLYGON_OFFSET_FILL);
+        gl.glPolygonOffset(1, 1);
+
         Shader.setPenColor(gl, Color.BLUE);
         tri1.draw(gl, frame);
-        
+
+
+        /*
+        remember opengl is stateful, once you enable
+        poly offset fill is will do it for all things
+        drawn in the future, so we manually disable it
+         */
+        gl.glDisable(GL.GL_POLYGON_OFFSET_FILL);
+
         Shader.setPenColor(gl, Color.GREEN);
         tri2.draw(gl, frame);
     }
