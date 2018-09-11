@@ -65,8 +65,13 @@ public class ZFightingExample extends Application3D implements MouseListener {
         gl.glPolygonOffset(1, 1);
 
         Shader.setPenColor(gl, Color.BLUE);
+        //enable polygon offset for filled polygons       
+        gl.glEnable(GL3.GL_POLYGON_OFFSET_FILL);
+        //push this polygon to the front a little
+        gl.glPolygonOffset(-1,-1); 
+        //push to the back a little
+        //gl.glPolygonOffset(1,1);
         tri1.draw(gl, frame);
-
 
         /*
         remember opengl is stateful, once you enable

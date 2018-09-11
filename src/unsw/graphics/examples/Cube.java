@@ -19,9 +19,13 @@ import unsw.graphics.geometry.TriangleFan3D;
  *
  */
 public class Cube extends Application3D {
+    
+    private float rotationX, rotationY;
 
     public Cube() {
         super("Cube", 600, 600);
+        rotationX = 0;
+        rotationY = 0;
     }
     public float rotateX, rotateY;
 
@@ -30,7 +34,6 @@ public class Cube extends Application3D {
         super.reshape(gl, width, height);
         //Shader.setProjMatrix(gl, Matrix4.frustum(-1, 1, -1, 1, 1, 100));
         Shader.setProjMatrix(gl, Matrix4.perspective(60, 1, 1, 10));
-        // Doing nothing, for now.
     }
 
     public static void main(String[] args) {
@@ -79,7 +82,7 @@ public class Cube extends Application3D {
         Shader.setPenColor(gl, Color.YELLOW);
         face.draw(gl, frame.rotateX(-90));
         
-        // Right
+        // Top
         Shader.setPenColor(gl, Color.MAGENTA);
         face.draw(gl, frame.rotateX(90));
     }
